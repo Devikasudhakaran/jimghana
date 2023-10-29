@@ -9,7 +9,7 @@ class Screen2 extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          const SizedBox(height: 50),
+          const SizedBox(height: 150),
           Row(
             children: [
               const SizedBox(width: 35),
