@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:jim_ghana/screens/screen_two.dart';
+import 'package:jim_ghana/screens/screen_home.dart';
 
 
 
