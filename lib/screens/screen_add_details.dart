@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jim_ghana/screens/screen_two.dart';
+import 'package:jim_ghana/screens/screen_home.dart';
 
 
 class Screen3 extends StatelessWidget {
@@ -19,26 +19,26 @@ class Screen3 extends StatelessWidget {
                 color: Colors.black12,
                 borderRadius: BorderRadius.circular(5),
               ),
-              child: Column(
+              child: const Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(10),
+                    padding: EdgeInsets.all(10),
                     child: Center(child: Icon(Icons.qr_code)),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20),
                     child: Center(child: Text('Add QR & Photo')),
                   ),
                 ],
               ),
             ),
           ),
-          TextField(decoration: InputDecoration(labelText: '                                      Customer ID')),
-          TextField(decoration: InputDecoration(labelText: '                                    Vehicle Number')),
+          const TextField(decoration: InputDecoration(labelText: '                                      Customer ID')),
+          const TextField(decoration: InputDecoration(labelText: '                                    Vehicle Number')),
           Row(
             children: [
-              SizedBox(width: 100),
-              SizedBox(height: 100,),
+              const SizedBox(width: 100),
+              const SizedBox(height: 100,),
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: ElevatedButton(
