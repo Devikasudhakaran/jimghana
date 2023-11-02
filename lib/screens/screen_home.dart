@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:jim_ghana/screens/screen_add_details.dart';
 
 
@@ -96,11 +97,29 @@ Widget vehicleInWidget(BuildContext context) {
           padding: const EdgeInsets.all(10),
           itemCount: 1,
           itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Container(
+            return Slidable(
+                endActionPane: ActionPane(
+                  motion: StretchMotion(),
+                  children: [
+                    SlidableAction(
+                      backgroundColor: Colors.grey.shade400,
+                      foregroundColor: Colors.black,
+                      label: 'Exit',
+                      onPressed: (context) {
+                        // Use Navigator to navigate to the VehicleOut page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => VehicleOut()),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+
+            child: Container(
                 decoration: BoxDecoration(
                   color: Colors.black12,
-                  borderRadius: BorderRadius.circular(5),
+
                 ),
                 child: const Column(
                   children: [
@@ -121,12 +140,12 @@ Widget vehicleInWidget(BuildContext context) {
                     ),
                   ],
                 ),
-              ),
+            ),
             );
           },
         ),
       ),
-      // Add more list items as needed
+
     ],
   );
 }
@@ -157,7 +176,6 @@ class VehicleOut extends StatelessWidget {
                   style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-
                       color: Colors.black),
                 ),
               ),
@@ -209,8 +227,7 @@ Widget vehicleOutWidget(BuildContext context) {
           padding: const EdgeInsets.all(10),
           itemCount: 1,
           itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Container(
+            return  Container(
                 decoration: BoxDecoration(
                   color: Colors.black12,
                   borderRadius: BorderRadius.circular(5),
@@ -241,7 +258,7 @@ Widget vehicleOutWidget(BuildContext context) {
                     ),
                   ],
                 ),
-              ),
+
             );
           },
         ),
