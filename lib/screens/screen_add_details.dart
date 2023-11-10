@@ -33,12 +33,12 @@ class Screen3 extends StatelessWidget {
               ),
             ),
           ),
-          const TextField(decoration: InputDecoration(labelText: '                                      Customer ID')),
-          const TextField(decoration: InputDecoration(labelText: '                                    Vehicle Number')),
+          const TextField(decoration: InputDecoration(label: Center(child: Text("Unique ID"),))),
+          const TextField(decoration: InputDecoration(label: Center(child: Text("Vehicle Number"),))),
           Row(
             children: [
               const SizedBox(width: 100),
-              const SizedBox(height: 100,),
+              const SizedBox(height: 100),
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: ElevatedButton(
