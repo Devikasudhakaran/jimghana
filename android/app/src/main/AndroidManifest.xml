@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kokonet.jimghana">
     <application
         android:label="jim_ghana"
         android:name="${applicationName}"

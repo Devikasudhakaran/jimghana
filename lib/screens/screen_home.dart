@@ -3,14 +3,16 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:jim_ghana/screens/screen_add_details.dart';
 
 
-void main() {
-  runApp(const MaterialApp(
+
+ void main()  {
+   runApp(const MaterialApp(
     home: Screen2(),
   ));
 }
 
 class Screen2 extends StatelessWidget {
   const Screen2({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {

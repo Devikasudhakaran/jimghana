@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1050075660037",
+    "project_id": "jim-ghana-driver-app",
+    "storage_bucket": "jim-ghana-driver-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050075660037:android:fbbcc961d16991b33c816c",
+        "android_client_info": {
+          "package_name": "com.kokonet.jimghana"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCF1LytbfbqP62EYpEwqJFTWhx4gXbtF8Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
