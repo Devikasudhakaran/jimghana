@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:jim_ghana/screens/screen_home.dart';
 
+import '../repository/provider/add_api_provider.dart';
 
-class Screen3 extends StatelessWidget {
-  const Screen3({Key? key}) : super(key: key);
+
+class Screen3 extends StatefulWidget {
+  const Screen3({super.key});
+
+  @override
+  State<Screen3> createState() => _Screen3State();
+}
+
+class _Screen3State extends State<Screen3> {
+  final _controllerUniqueID = TextEditingController();
+  final _controllerVehicleNumber = TextEditingController();
+ String uniqueId = '';
+ String vehicleNumber = '';
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +48,11 @@ class Screen3 extends StatelessWidget {
               ),
             ),
           ),
-          const TextField(decoration: InputDecoration(label: Center(child: Text("Unique ID"),))),
-          const TextField(decoration: InputDecoration(label: Center(child: Text("Vehicle Number"),))),
+
+           TextField(controller: _controllerUniqueID,
+               decoration: const InputDecoration(label: Center(child: Text("Unique ID"),))),
+
+          TextField(controller: _controllerVehicleNumber,decoration: const InputDecoration(label: Center(child: Text("Vehicle Number"),))),
           Row(
             children: [
               const SizedBox(width: 100),
@@ -50,22 +68,22 @@ class Screen3 extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        content: Text('Are you sure you want to close without saving?'),
+                        content: const Text('Are you sure you want to close without saving?'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: Text('CANCEL'),
+                            child: const Text('CANCEL'),
                           ),
                           TextButton(
                             onPressed: () {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const Screen2(),
+                                    builder: (context) => const ScreenHome(),
                                   )
                               );
                             },
-                            child: Text('OK'),
+                            child: const Text('OK'),
                           ),
 
                         ],
@@ -75,10 +93,12 @@ class Screen3 extends StatelessWidget {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: ()  async {
+                  await JavaService().getPosts(_controllerVehicleNumber.text, _controllerUniqueID.text );
+                  // print('hello');
                   Navigator.pop(context);
                 },
-                child: Text(
+                child:  Text(
                   'ADD VEHICLE',
                   style: TextStyle(color: Colors.black),
                 ),

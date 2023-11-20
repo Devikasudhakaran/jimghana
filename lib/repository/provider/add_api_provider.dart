@@ -1,46 +1,87 @@
 import 'dart:convert';
-import 'dart:io';
-
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
-import '../../constants/service_urls.dart';
-import '../../utils/print_statements.dart';
+import '../../model_class/add_vehicle_response.dart';
+import '../../model_class/get_vehicle_response.dart';
 
 
 
-class JavaApiProvider {
-  final String _baseUrl = ServiceUrls.apiBaseUrlForJava;
 
-  Future<dynamic> getData(
-      String serviceName, Map paramBody, String controllerName) async {
-    dynamic responseJson;
-    print('service');
+class JavaService {
+  Future<AddVehicle?> getPosts(String vehicleNumber, String uniqueId, ) async {
+
+    var client = http.Client();
+    var inTime = DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now());
+
+    Map<String, dynamic> input = {
+      "vehicle_no": vehicleNumber,
+      "unique_id": uniqueId,
+      "in_time": inTime,
+      "driver_user_id": "49"
+    };
+    var uri = 'https://lmckmrl.kokonet.in/customerservice/addVehicleData';
+    var url = Uri.parse(uri);
+    print(input);
     try {
-      var response = await http.post(
-        Uri.parse('https://lmckmrl.kokonet.in/customerservice/addVehicleData'),
+      var response = await client.post(
+        url,
+        body: json.encode(input),
         headers: {"Content-Type": "application/json"},
-        body: json.encode(paramBody),
       );
-      printInDebug(_baseUrl + controllerName + serviceName);
+
+      print(response.body);
+
       if (response.statusCode == 200) {
-        print('service2');
-        responseJson = jsonDecode(response.body);
-        return responseJson;
+        print('service1');
+        // Assuming AddVehicle is your model class, replace it with your actual class
+        return AddVehicle.fromJson(jsonDecode(response.body));
       } else {
+        // Handle non-200 status code here
+        print('Error: ${response.statusCode}');
         return null;
       }
-    } on SocketException {
-      return Fluttertoast.showToast(
-        msg: "You are now offline",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 2,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-        fontSize: 18.0,
+    } catch (e) {
+      // Handle network-related errors
+      print('Error: $e');
+      return null;
+    } finally {
+      client.close();
+    }
+  }
+
+
+  Future<GetVehicle?> getDetails() async {
+    print('service5');
+
+    var client = http.Client();
+    Map input = {};
+    var uri = 'https://lmckmrl.kokonet.in/customerservice/getVehicleDetails';
+    var url = Uri.parse(uri);
+
+    try {
+      var response = await client.post(
+        url,
+        body: json.encode(input),
+        headers: {"Content-Type": "application/json"},
       );
+
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        print('service2');
+
+        return GetVehicle.fromJson(jsonDecode(response.body));
+      } else {
+        print('Error: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    } finally {
+      client.close();
     }
   }
 }
+
