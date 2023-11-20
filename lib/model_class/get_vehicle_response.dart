@@ -1,19 +1,19 @@
-class VehicleResponse {
+class GetVehicle {
   int? statusCode;
   String? status;
   String? message;
-  List<Data>? data;
+  List<GetVehicleList>? vehicleList;
 
-  VehicleResponse({this.statusCode, this.status, this.message, this.data});
+  GetVehicle({this.statusCode, this.status, this.message, this.vehicleList});
 
-  VehicleResponse.fromJson(Map<String, dynamic> json) {
+  GetVehicle.fromJson(Map<String, dynamic> json) {
     statusCode = json['statusCode'];
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
-      data = <Data>[];
+      vehicleList = <GetVehicleList>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        vehicleList!.add(new GetVehicleList.fromJson(v));
       });
     }
   }
@@ -23,14 +23,14 @@ class VehicleResponse {
     data['statusCode'] = this.statusCode;
     data['status'] = this.status;
     data['message'] = this.message;
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    if (this.vehicleList != null) {
+      data['data'] = this.vehicleList!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
-class Data {
+class GetVehicleList {
   String? driverName;
   String? uniqueId;
   String? inTime;
@@ -39,7 +39,7 @@ class Data {
   int? id;
   String? entryDate;
 
-  Data(
+  GetVehicleList(
       {this.driverName,
         this.uniqueId,
         this.inTime,
@@ -48,7 +48,7 @@ class Data {
         this.id,
         this.entryDate});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  GetVehicleList.fromJson(Map<String, dynamic> json) {
     driverName = json['driver_name'];
     uniqueId = json['unique_id'];
     inTime = json['in_time'];
