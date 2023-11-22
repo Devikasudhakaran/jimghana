@@ -3,7 +3,6 @@ import 'package:jim_ghana/screens/screen_home.dart';
 
 import '../repository/provider/add_api_provider.dart';
 
-
 class Screen3 extends StatefulWidget {
   const Screen3({super.key});
 
@@ -14,11 +13,8 @@ class Screen3 extends StatefulWidget {
 class _Screen3State extends State<Screen3> {
   final _controllerUniqueID = TextEditingController();
   final _controllerVehicleNumber = TextEditingController();
- String uniqueId = '';
- String vehicleNumber = '';
-
-
-
+  String uniqueId = '';
+  String vehicleNumber = '';
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +44,18 @@ class _Screen3State extends State<Screen3> {
               ),
             ),
           ),
-
-           TextField(controller: _controllerUniqueID,
-               decoration: const InputDecoration(label: Center(child: Text("Unique ID"),))),
-
-          TextField(controller: _controllerVehicleNumber,decoration: const InputDecoration(label: Center(child: Text("Vehicle Number"),))),
+          TextField(
+              controller: _controllerUniqueID,
+              decoration: const InputDecoration(
+                  label: Center(
+                child: Text("Unique ID"),
+              ))),
+          TextField(
+              controller: _controllerVehicleNumber,
+              decoration: const InputDecoration(
+                  label: Center(
+                child: Text("Vehicle Number"),
+              ))),
           Row(
             children: [
               const SizedBox(width: 100),
@@ -60,7 +63,10 @@ class _Screen3State extends State<Screen3> {
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: ElevatedButton(
-                  child: Text('BACK', style: TextStyle(color: Colors.black),),
+                  child: Text(
+                    'BACK',
+                    style: TextStyle(color: Colors.black),
+                  ),
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.white54),
                   ),
@@ -68,7 +74,8 @@ class _Screen3State extends State<Screen3> {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        content: const Text('Are you sure you want to close without saving?'),
+                        content: const Text(
+                            'Are you sure you want to close without saving?'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -80,12 +87,10 @@ class _Screen3State extends State<Screen3> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => const ScreenHome(),
-                                  )
-                              );
+                                  ));
                             },
                             child: const Text('OK'),
                           ),
-
                         ],
                       ),
                     );
@@ -93,12 +98,18 @@ class _Screen3State extends State<Screen3> {
                 ),
               ),
               ElevatedButton(
-                onPressed: ()  async {
-                  await JavaService().getPosts(_controllerVehicleNumber.text, _controllerUniqueID.text );
+                onPressed: () async {
+                  await JavaService().getPosts(
+                      _controllerVehicleNumber.text, _controllerUniqueID.text);
                   // print('hello');
-                  Navigator.pop(context);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ScreenHome(),
+                    ),
+                  );
                 },
-                child:  Text(
+                child: Text(
                   'ADD VEHICLE',
                   style: TextStyle(color: Colors.black),
                 ),
@@ -106,8 +117,6 @@ class _Screen3State extends State<Screen3> {
                   backgroundColor: MaterialStateProperty.all(Colors.white54),
                 ),
               ),
-
-
             ],
           ),
         ],

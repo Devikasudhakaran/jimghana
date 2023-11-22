@@ -1,26 +1,19 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
+import '../../model_class/exit_Vehicle_Data.dart';
+import '../../model_class/get_exit_vehicle.dart';
 
-import '../../model_class/add_vehicle_response.dart';
-import '../../model_class/get_vehicle_response.dart';
-
-class JavaService {
-  Future<AddVehicle?> getPosts(
-    String vehicleNumber,
-    String uniqueId,
+class JavaService2 {
+  Future<ExitVehicle?> exitDetails(
+    String vehicleId,
   ) async {
     var client = http.Client();
-    var inTime = DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now());
 
     Map<String, dynamic> input = {
-      "vehicle_no": vehicleNumber,
-      "unique_id": uniqueId,
-      "in_time": inTime,
-      "driver_user_id": "49"
+      "vehicle_id": vehicleId,
     };
-    var uri = 'https://lmckmrl.kokonet.in/customerservice/addVehicleData';
+    var uri = 'https://lmckmrl.kokonet.in/customerservice/exitVehicleData';
     var url = Uri.parse(uri);
     print(input);
     try {
@@ -35,7 +28,7 @@ class JavaService {
       if (response.statusCode == 200) {
         // print('service1');
         // Assuming AddVehicle is your model class, replace it with your actual class
-        return AddVehicle.fromJson(jsonDecode(response.body));
+        return ExitVehicle.fromJson(jsonDecode(response.body));
       } else {
         // Handle non-200 status code here
         print('Error: ${response.statusCode}');
@@ -50,12 +43,13 @@ class JavaService {
     }
   }
 
-  Future<GetVehicle?> getDetails() async {
+  Future<GetExitDetails?> getExitDetails() async {
     // print('service5');
 
     var client = http.Client();
     Map input = {};
-    var uri = 'https://lmckmrl.kokonet.in/customerservice/getVehicleDetails';
+    var uri =
+        'https://lmckmrl.kokonet.in/customerservice/getExiedVehicleDetails';
     var url = Uri.parse(uri);
 
     try {
@@ -70,7 +64,7 @@ class JavaService {
       if (response.statusCode == 200) {
         // print('service2');
 
-        return GetVehicle.fromJson(jsonDecode(response.body));
+        return GetExitDetails.fromJson(jsonDecode(response.body));
       } else {
         print('Error: ${response.statusCode}');
         return null;
