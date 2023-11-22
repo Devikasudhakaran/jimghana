@@ -1,20 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:jim_ghana/repository/provider/add_api_provider.dart';
+import 'package:jim_ghana/repository/provider/exit_api_provider.dart';
 import 'package:jim_ghana/screens/screen_add_details.dart';
 import 'package:jim_ghana/screens/screen_history.dart';
 
 import '../model_class/get_vehicle_response.dart';
-
-
-
-
-
-//  void main()  {
-//    runApp(MaterialApp(
-//     home: Screen2(),
-//   ));
-// }
+import '../repository/provider/add_api_provider.dart';
 
 class ScreenHome extends StatefulWidget {
   const ScreenHome({super.key});
@@ -24,72 +15,125 @@ class ScreenHome extends StatefulWidget {
 
 class _ScreenHomeState extends State<ScreenHome> {
   List<GetVehicleList> vehicleList = [];
+  bool isLoading = false;
 
-
-   @override
+  @override
   void initState() {
-     super.initState();
-     print('service3');
+    super.initState();
+    // print('service3');
     getDetails();
   }
 
   getDetails() async {
-    print('service4');
-     var response = await JavaService().getDetails();
-     if (response != null) {
-       setState(() {
-         vehicleList = response.vehicleList!;
-        // print(vehicleList[3].vehicleNumber);
-       });
-     }
+    setState(() {
+      isLoading = true;
+    });
 
+    try {
+      var response = await JavaService().getDetails();
+
+      if (response != null) {
+        vehicleList = response.vehicleList!;
+        print(vehicleList.length);
+        for (int i = 0; i < vehicleList.length; i++) {
+          print(vehicleList[i].vehicleNumber);
+        }
+      }
+    } catch (error) {
+      print('Error: $error');
+      // Handle the error if needed
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
-   @override
-  Widget build(BuildContext context) {
-    // print(vehicleList[3].vehicleNumber);
-    return Scaffold(
-      body: ListView(
-        children: [
-          const SizedBox(height: 50),
-          Row(
-            children: [
-              const SizedBox(width: 35),
-              const TextButton(
-                onPressed: null, // Handle button click logic here
-                child: Text(
-                  'VEHICLE IN',
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
-                ),
-              ),
-              const SizedBox(width: 100),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const VehicleOut(),
-                      ));
-                }, // Handle button click logic here
-                child: const Text(
-                  'VEHICLE OUT',
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
-                ),
-              ),
-            ],
+  getExitDetails(int index) async {
+    // setState(() {
+    //   isLoading = true;
+    // });
+
+    try {
+      var response =
+          await JavaService2().exitDetails(vehicleList[index].id.toString());
+
+      if (response != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VehicleOut(),
           ),
-         vehicleInWidget(context),
-        ],
-      ),
+        );
+      }
+    } catch (error) {
+      print('Error: $error');
+      // Handle the error if needed
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: isLoading
+          ? Center(
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Loading...',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  CircularProgressIndicator(
+                    color: Colors.black,
+                  ),
+                ],
+              ),
+            )
+          : ListView(
+              children: [
+                const SizedBox(height: 50),
+                Row(
+                  children: [
+                    const SizedBox(width: 35),
+                    const TextButton(
+                      onPressed: null, // Handle button click logic here
+                      child: Text(
+                        'VEHICLE IN',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      ),
+                    ),
+                    const SizedBox(width: 100),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const VehicleOut(),
+                            ));
+                      }, // Handle button click logic here
+                      child: const Text(
+                        'VEHICLE OUT',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      ),
+                    ),
+                  ],
+                ),
+                vehicleInWidget(context),
+              ],
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => const Screen3(),
@@ -104,10 +148,9 @@ class _ScreenHomeState extends State<ScreenHome> {
     );
   }
 
-
   Widget vehicleInWidget(BuildContext context) {
-    //print(vehicleList[3].vehicleNumber);
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const SizedBox(height: 50),
         Padding(
@@ -125,16 +168,9 @@ class _ScreenHomeState extends State<ScreenHome> {
             ),
           ),
         ),
-
         Container(
-          height: MediaQuery
-              .of(context)
-              .size
-              .height,
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
           child: ListView.builder(
             padding: const EdgeInsets.all(10),
             itemCount: vehicleList.length,
@@ -147,21 +183,19 @@ class _ScreenHomeState extends State<ScreenHome> {
                       backgroundColor: Colors.grey.shade400,
                       foregroundColor: Colors.black,
                       label: 'Exit',
-                      onPressed: (context) {
-                        // Use Navigator to navigate to the VehicleOut page
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const VehicleOut()),
-                        );
+                      onPressed: (context) async {
+                        // await JavaService2().exitDetails(
+                        //     vehicleList[index].id.toString());
+                        getExitDetails(index);
+
+                        // print('hello');
                       },
                     ),
                   ],
                 ),
-
                 child: Container(
                   decoration: const BoxDecoration(
                     color: Colors.black12,
-
                   ),
                   child: Column(
                     children: [
@@ -170,7 +204,10 @@ class _ScreenHomeState extends State<ScreenHome> {
                         padding: const EdgeInsets.all(10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [Text(vehicleList[index].vehicleNumber.toString()), const Text('Image')],
+                          children: [
+                            Text(vehicleList[index].vehicleNumber.toString()),
+                            const Text('Image')
+                          ],
                         ),
                       ),
                       Padding(
@@ -190,13 +227,7 @@ class _ScreenHomeState extends State<ScreenHome> {
             },
           ),
         ),
-
       ],
     );
   }
 }
-
-
-
-
-

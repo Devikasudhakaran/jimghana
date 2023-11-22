@@ -1,12 +1,12 @@
-class AddVehicle {
+class ExitVehicle {
   int? statusCode;
   String? status;
   String? message;
   Data? data;
 
-  AddVehicle({this.statusCode, this.status, this.message, this.data});
+  ExitVehicle({this.statusCode, this.status, this.message, this.data});
 
-  AddVehicle.fromJson(Map<String, dynamic> json) {
+  ExitVehicle.fromJson(Map<String, dynamic> json) {
     statusCode = json['statusCode'];
     status = json['status'];
     message = json['message'];
@@ -26,7 +26,7 @@ class AddVehicle {
 }
 
 class Data {
-  String? id;
+  int? id;
 
   Data({this.id});
 
