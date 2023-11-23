@@ -50,10 +50,6 @@ class _ScreenHomeState extends State<ScreenHome> {
   }
 
   getExitDetails(int index) async {
-    // setState(() {
-    //   isLoading = true;
-    // });
-
     try {
       var response =
           await JavaService2().exitDetails(vehicleList[index].id.toString());
@@ -74,76 +70,51 @@ class _ScreenHomeState extends State<ScreenHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: isLoading
-          ? Center(
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Loading...',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  CircularProgressIndicator(
-                    color: Colors.black,
-                  ),
-                ],
-              ),
-            )
-          : ListView(
-              children: [
-                const SizedBox(height: 50),
-                Row(
+    return DefaultTabController(
+      length: 2, // Number of tabs
+      child: Scaffold(
+        body: isLoading
+            ? const Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(width: 35),
-                    const TextButton(
-                      onPressed: null, // Handle button click logic here
-                      child: Text(
-                        'VEHICLE IN',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
+                    Text(
+                      'Loading...',
+                      style: TextStyle(fontSize: 20),
                     ),
-                    const SizedBox(width: 100),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const VehicleOut(),
-                            ));
-                      }, // Handle button click logic here
-                      child: const Text(
-                        'VEHICLE OUT',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    CircularProgressIndicator(
+                      color: Colors.black,
                     ),
                   ],
                 ),
-                vehicleInWidget(context),
-              ],
-            ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const Screen3(),
-            ),
-          );
-        },
-        child: Text('Add'),
-        backgroundColor: Colors.black12,
-        foregroundColor: Colors.black,
-        shape: const BeveledRectangleBorder(),
+              )
+            : Column(
+                children: [
+                  const SizedBox(height: 80),
+                  const TabBar(
+                    labelColor: Colors.black,
+                    tabs: [
+                      Tab(
+                        text: 'VEHICLE IN',
+                      ),
+                      Tab(
+                        text: 'VEHICLE OUT',
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        vehicleInWidget(context),
+                        const VehicleOut(), // You may need to pass data to VehicleOut
+                      ],
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -168,63 +139,104 @@ class _ScreenHomeState extends State<ScreenHome> {
             ),
           ),
         ),
-        Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
+        const SizedBox(height: 20),
+        Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.all(10),
             itemCount: vehicleList.length,
             itemBuilder: (BuildContext context, int index) {
-              return Slidable(
-                endActionPane: ActionPane(
-                  motion: const StretchMotion(),
-                  children: [
-                    SlidableAction(
-                      backgroundColor: Colors.grey.shade400,
-                      foregroundColor: Colors.black,
-                      label: 'Exit',
-                      onPressed: (context) async {
-                        // await JavaService2().exitDetails(
-                        //     vehicleList[index].id.toString());
-                        getExitDetails(index);
-
-                        // print('hello');
-                      },
+              return Column(
+                children: [
+                  Slidable(
+                    endActionPane: ActionPane(
+                      motion: const StretchMotion(),
+                      children: [
+                        SlidableAction(
+                          backgroundColor: Colors.grey.shade400,
+                          foregroundColor: Colors.black,
+                          label: 'Exit',
+                          onPressed: (context) async {
+                            getExitDetails(index);
+                          },
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.black12,
-                  ),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(vehicleList[index].vehicleNumber.toString()),
-                            const Text('Image')
-                          ],
-                        ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.circular(5),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(vehicleList[index].inTime.toString()),
-                            const Text('Driver')
-                          ],
-                        ),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 10),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(vehicleList[index]
+                                    .vehicleNumber
+                                    .toString()),
+                                const Text('Image')
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                    'In Time: ${vehicleList[index].inTime.toString()}'),
+                                const Text('Driver')
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
+                  const SizedBox(height: 10), // Add space between items
+                ],
+              );
+            },
+          ),
+        ),
+        // Align(
+        //   alignment: Alignment.bottomRight,
+        //   child: FloatingActionButton(
+        //     onPressed: () {
+        //       Navigator.pushReplacement(
+        //         context,
+        //         MaterialPageRoute(
+        //           builder: (context) => const Screen3(),
+        //         ),
+        //       );
+        //     },
+        //     child: Text('Add'),
+        //     backgroundColor: Colors.black54,
+        //     foregroundColor: Colors.white,
+        //     shape: const BeveledRectangleBorder(),
+        //   ),
+        // ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Screen3(),
                 ),
               );
             },
+            child: Text(
+              'Add',
+              style: TextStyle(color: Colors.black),
+            ), // <-- Closing parenthesis was missing here
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Colors.white54),
+            ),
           ),
         ),
       ],
