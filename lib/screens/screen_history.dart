@@ -11,7 +11,9 @@ class VehicleOut extends StatefulWidget {
 
 class _VehicleOutState extends State<VehicleOut> {
   List<ExitVehicleList> exitList = [];
+  List<ExitVehicleList> filteredExitList = [];
   bool isLoading = false;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -28,7 +30,11 @@ class _VehicleOutState extends State<VehicleOut> {
       var response = await JavaService2().getExitDetails();
 
       if (response != null) {
-        exitList = response.exitList!;
+        setState(() {
+          exitList = response.exitList!;
+          filteredExitList =
+              exitList; // Initialize filtered list with all items
+        });
         print(exitList.length);
         for (int i = 0; i < exitList.length; i++) {
           print(exitList[i].vehicleNumber);
@@ -42,6 +48,21 @@ class _VehicleOutState extends State<VehicleOut> {
         isLoading = false;
       });
     }
+  }
+
+  void filterList(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        // If the query is empty, show all items
+        filteredExitList = exitList;
+      } else {
+        // Filter the list based on the search query
+        filteredExitList = exitList
+            .where((exit) =>
+                exit.vehicleNumber!.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
   }
 
   @override
@@ -74,6 +95,10 @@ class _VehicleOutState extends State<VehicleOut> {
                     child: Container(
                       decoration: const BoxDecoration(color: Colors.black12),
                       child: TextField(
+                        controller: _searchController,
+                        onChanged: (query) {
+                          filterList(query);
+                        },
                         decoration: InputDecoration(
                           suffixIcon: const Icon(Icons.search),
                           enabledBorder: OutlineInputBorder(
@@ -88,7 +113,7 @@ class _VehicleOutState extends State<VehicleOut> {
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: Column(
-                      children: List.generate(exitList.length, (index) {
+                      children: List.generate(filteredExitList.length, (index) {
                         return Column(
                           children: [
                             Container(
@@ -105,7 +130,7 @@ class _VehicleOutState extends State<VehicleOut> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(exitList[index]
+                                        Text(filteredExitList[index]
                                             .vehicleNumber
                                             .toString()),
                                         Text('Image')
@@ -119,7 +144,7 @@ class _VehicleOutState extends State<VehicleOut> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                            'In Time: ${exitList[index].inTime.toString()}'),
+                                            'In Time: ${filteredExitList[index].inTime.toString()}'),
                                         Text('Driver')
                                       ],
                                     ),
@@ -131,7 +156,7 @@ class _VehicleOutState extends State<VehicleOut> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                            'Out Time: ${exitList[index].outTime.toString()}'),
+                                            'Out Time: ${filteredExitList[index].outTime.toString()}'),
                                         Text('Driver')
                                       ],
                                     ),
@@ -139,14 +164,12 @@ class _VehicleOutState extends State<VehicleOut> {
                                 ],
                               ),
                             ),
-                            const SizedBox(
-                                height: 10), // Add space between items
+                            const SizedBox(height: 10),
                           ],
                         );
                       }),
                     ),
                   ),
-                  // Add more list items as needed
                 ],
               ),
             ),
