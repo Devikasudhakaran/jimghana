@@ -14,8 +14,10 @@ class ScreenHome extends StatefulWidget {
 }
 
 class _ScreenHomeState extends State<ScreenHome> {
+  final TextEditingController _searchController = TextEditingController();
   List<GetVehicleList> vehicleList = [];
   bool isLoading = false;
+  List<GetVehicleList> filteredVehicleList = [];
 
   @override
   void initState() {
@@ -33,7 +35,10 @@ class _ScreenHomeState extends State<ScreenHome> {
       var response = await JavaService().getDetails();
 
       if (response != null) {
-        vehicleList = response.vehicleList!;
+        setState(() {
+          vehicleList = response.vehicleList!;
+          filteredVehicleList = vehicleList;
+        });
         print(vehicleList.length);
         for (int i = 0; i < vehicleList.length; i++) {
           print(vehicleList[i].vehicleNumber);
@@ -52,9 +57,12 @@ class _ScreenHomeState extends State<ScreenHome> {
   getExitDetails(int index) async {
     try {
       var response =
-          await JavaService2().exitDetails(vehicleList[index].id.toString());
+      await JavaService2().exitDetails(vehicleList[index].id.toString());
 
       if (response != null) {
+        setState(() {
+          getDetails();
+        });
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -68,6 +76,24 @@ class _ScreenHomeState extends State<ScreenHome> {
     }
   }
 
+  void filterList(String query) {
+    setState(() {
+      // If the query is empty, show the original list
+      if (query.isEmpty) {
+        // Reset the list to the original list (if applicable)
+        filteredVehicleList = vehicleList;
+      } else {
+        // Filter the list based on the search query
+        filteredVehicleList = vehicleList
+            .where((vehicle) =>
+            vehicle.vehicleNumber!
+                .toLowerCase()
+                .contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -75,46 +101,46 @@ class _ScreenHomeState extends State<ScreenHome> {
       child: Scaffold(
         body: isLoading
             ? const Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Loading...',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    CircularProgressIndicator(
-                      color: Colors.black,
-                    ),
-                  ],
-                ),
-              )
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Loading...',
+                style: TextStyle(fontSize: 20),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              CircularProgressIndicator(
+                color: Colors.black,
+              ),
+            ],
+          ),
+        )
             : Column(
+          children: [
+            const SizedBox(height: 80),
+            const TabBar(
+              labelColor: Colors.black,
+              tabs: [
+                Tab(
+                  text: 'VEHICLE IN',
+                ),
+                Tab(
+                  text: 'VEHICLE OUT',
+                ),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
                 children: [
-                  const SizedBox(height: 80),
-                  const TabBar(
-                    labelColor: Colors.black,
-                    tabs: [
-                      Tab(
-                        text: 'VEHICLE IN',
-                      ),
-                      Tab(
-                        text: 'VEHICLE OUT',
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      children: [
-                        vehicleInWidget(context),
-                        const VehicleOut(), // You may need to pass data to VehicleOut
-                      ],
-                    ),
-                  ),
+                  vehicleInWidget(context),
+                  const VehicleOut(),
                 ],
               ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -129,6 +155,10 @@ class _ScreenHomeState extends State<ScreenHome> {
           child: Container(
             decoration: const BoxDecoration(color: Colors.black12),
             child: TextField(
+              controller: _searchController,
+              onChanged: (query) {
+                filterList(query);
+              },
               decoration: InputDecoration(
                 suffixIcon: const Icon(Icons.search),
                 enabledBorder: OutlineInputBorder(
@@ -143,7 +173,7 @@ class _ScreenHomeState extends State<ScreenHome> {
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.all(10),
-            itemCount: vehicleList.length,
+            itemCount: filteredVehicleList.length,
             itemBuilder: (BuildContext context, int index) {
               return Column(
                 children: [
@@ -174,7 +204,7 @@ class _ScreenHomeState extends State<ScreenHome> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(vehicleList[index]
+                                Text(filteredVehicleList[index]
                                     .vehicleNumber
                                     .toString()),
                                 const Text('Image')
@@ -187,7 +217,8 @@ class _ScreenHomeState extends State<ScreenHome> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                    'In Time: ${vehicleList[index].inTime.toString()}'),
+                                    'In Time: ${filteredVehicleList[index]
+                                        .inTime.toString()}'),
                                 const Text('Driver')
                               ],
                             ),
@@ -196,7 +227,7 @@ class _ScreenHomeState extends State<ScreenHome> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10), // Add space between items
+                  const SizedBox(height: 10),
                 ],
               );
             },
@@ -221,21 +252,24 @@ class _ScreenHomeState extends State<ScreenHome> {
         // ),
         Align(
           alignment: Alignment.bottomRight,
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Screen3(),
-                ),
-              );
-            },
-            child: Text(
-              'Add',
-              style: TextStyle(color: Colors.black),
-            ), // <-- Closing parenthesis was missing here
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.white54),
+          child: Padding(
+            padding: const EdgeInsets.all(5),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Screen3(),
+                  ),
+                );
+              },
+              child: Text(
+                'Add',
+                style: TextStyle(color: Colors.black),
+              ), // <-- Closing parenthesis was missing here
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.grey),
+              ),
             ),
           ),
         ),
