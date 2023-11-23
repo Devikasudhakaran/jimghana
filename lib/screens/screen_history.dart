@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:jim_ghana/repository/provider/exit_api_provider.dart';
-import 'package:jim_ghana/screens/screen_home.dart';
 
 import '../model_class/get_exit_vehicle.dart';
 
@@ -67,122 +65,91 @@ class _VehicleOutState extends State<VehicleOut> {
                 ],
               ),
             )
-          : ListView(
-              children: [
-                const SizedBox(height: 50),
-                Row(
-                  children: [
-                    const SizedBox(width: 35),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ScreenHome(),
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 50),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Container(
+                      decoration: const BoxDecoration(color: Colors.black12),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          suffixIcon: const Icon(Icons.search),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
                           ),
+                          labelText: 'Search vehicle number',
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: List.generate(exitList.length, (index) {
+                        return Column(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black12,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 10),
+                                  Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(exitList[index]
+                                            .vehicleNumber
+                                            .toString()),
+                                        Text('Image')
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                            'In Time: ${exitList[index].inTime.toString()}'),
+                                        Text('Driver')
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                            'Out Time: ${exitList[index].outTime.toString()}'),
+                                        Text('Driver')
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                                height: 10), // Add space between items
+                          ],
                         );
-                      }, // Handle button click logic here
-                      child: const Text(
-                        'VEHICLE IN',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
+                      }),
                     ),
-                    const SizedBox(width: 100),
-                    TextButton(
-                      onPressed: () {}, // Handle button click logic here
-                      child: const Text(
-                        'VEHICLE OUT',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
-                    ),
-                  ],
-                ),
-                vehicleOutWidget(context),
-              ],
+                  ),
+                  // Add more list items as needed
+                ],
+              ),
             ),
     );
   }
-}
-
-Widget vehicleOutWidget(BuildContext context) {
-  var time = DateTime.now();
-  return Column(
-    children: [
-      const SizedBox(height: 50),
-      Padding(
-        padding: const EdgeInsets.all(10),
-        child: Container(
-          decoration: BoxDecoration(color: Colors.black12),
-          child: TextField(
-            decoration: InputDecoration(
-              suffixIcon: Icon(Icons.search),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              labelText: 'Search vehicle number',
-            ),
-          ),
-        ),
-      ),
-
-      Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: ListView.builder(
-          padding: const EdgeInsets.all(10),
-          itemCount: exitList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
-              decoration: BoxDecoration(
-                color: Colors.black12,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  const Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(exitList[index].vehicleNumber.toString()),
-                        Text('Image')
-                      ],
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(vehicleList[index].inTime.toString()),
-                        Text('Driver')
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(DateFormat('yyyy-MM-ddTHH:mm:ss').format(time)),
-                        Text('Driver')
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-      // Add more list items as needed
-    ],
-  );
 }
