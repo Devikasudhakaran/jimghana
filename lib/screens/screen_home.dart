@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:jim_ghana/repository/provider/exit_api_provider.dart';
 import 'package:jim_ghana/screens/screen_add_details.dart';
 import 'package:jim_ghana/screens/screen_history.dart';
 
+import '../model_class/get_exit_vehicle.dart';
 import '../model_class/get_vehicle_response.dart';
 import '../repository/provider/add_api_provider.dart';
+import '../repository/provider/exit_api_provider.dart';
 
 class ScreenHome extends StatefulWidget {
   const ScreenHome({super.key});
@@ -13,15 +14,21 @@ class ScreenHome extends StatefulWidget {
   _ScreenHomeState createState() => _ScreenHomeState();
 }
 
-class _ScreenHomeState extends State<ScreenHome> {
-  final TextEditingController _searchController = TextEditingController();
-  List<GetVehicleList> vehicleList = [];
+class _ScreenHomeState extends State<ScreenHome>
+    with SingleTickerProviderStateMixin {
+  final TextEditingController _vehicleInSearchController =
+      TextEditingController();
   bool isLoading = false;
+  List<GetVehicleList> vehicleList = [];
   List<GetVehicleList> filteredVehicleList = [];
+  List<ExitVehicleList> exitList = [];
+  List<ExitVehicleList> filteredExitList = [];
+  TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     // print('service3');
     getDetails();
   }
@@ -39,10 +46,10 @@ class _ScreenHomeState extends State<ScreenHome> {
           vehicleList = response.vehicleList!;
           filteredVehicleList = vehicleList;
         });
-        print(vehicleList.length);
-        for (int i = 0; i < vehicleList.length; i++) {
-          print(vehicleList[i].vehicleNumber);
-        }
+        // print(vehicleList.length);
+        // for (int i = 0; i < vehicleList.length; i++) {
+        //   print(vehicleList[i].vehicleNumber);
+        // }
       }
     } catch (error) {
       print('Error: $error');
@@ -57,18 +64,12 @@ class _ScreenHomeState extends State<ScreenHome> {
   getExitDetails(int index) async {
     try {
       var response =
-      await JavaService2().exitDetails(vehicleList[index].id.toString());
+          await JavaService2().exitDetails(vehicleList[index].id.toString());
 
       if (response != null) {
         setState(() {
           getDetails();
         });
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VehicleOut(),
-          ),
-        );
       }
     } catch (error) {
       print('Error: $error');
@@ -76,17 +77,13 @@ class _ScreenHomeState extends State<ScreenHome> {
     }
   }
 
-  void filterList(String query) {
+  void filterVehicleList(String query) {
     setState(() {
-      // If the query is empty, show the original list
       if (query.isEmpty) {
-        // Reset the list to the original list (if applicable)
         filteredVehicleList = vehicleList;
       } else {
-        // Filter the list based on the search query
         filteredVehicleList = vehicleList
-            .where((vehicle) =>
-            vehicle.vehicleNumber!
+            .where((vehicle) => vehicle.vehicleNumber!
                 .toLowerCase()
                 .contains(query.toLowerCase()))
             .toList();
@@ -97,50 +94,52 @@ class _ScreenHomeState extends State<ScreenHome> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2, // Number of tabs
+      length: 2,
       child: Scaffold(
         body: isLoading
             ? const Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Loading...',
-                style: TextStyle(fontSize: 20),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              CircularProgressIndicator(
-                color: Colors.black,
-              ),
-            ],
-          ),
-        )
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Loading...',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    CircularProgressIndicator(
+                      color: Colors.black,
+                    ),
+                  ],
+                ),
+              )
             : Column(
-          children: [
-            const SizedBox(height: 80),
-            const TabBar(
-              labelColor: Colors.black,
-              tabs: [
-                Tab(
-                  text: 'VEHICLE IN',
-                ),
-                Tab(
-                  text: 'VEHICLE OUT',
-                ),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
                 children: [
-                  vehicleInWidget(context),
-                  const VehicleOut(),
+                  const SizedBox(height: 80),
+                  TabBar(
+                    controller: _tabController,
+                    labelColor: Colors.black,
+                    tabs: const [
+                      Tab(
+                        text: 'VEHICLE IN',
+                      ),
+                      Tab(
+                        text: 'VEHICLE OUT',
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        vehicleInWidget(context),
+                        VehicleOut(),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -155,9 +154,9 @@ class _ScreenHomeState extends State<ScreenHome> {
           child: Container(
             decoration: const BoxDecoration(color: Colors.black12),
             child: TextField(
-              controller: _searchController,
+              controller: _vehicleInSearchController,
               onChanged: (query) {
-                filterList(query);
+                filterVehicleList(query);
               },
               decoration: InputDecoration(
                 suffixIcon: const Icon(Icons.search),
@@ -217,8 +216,7 @@ class _ScreenHomeState extends State<ScreenHome> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                    'In Time: ${filteredVehicleList[index]
-                                        .inTime.toString()}'),
+                                    'In Time: ${filteredVehicleList[index].inTime.toString()}'),
                                 const Text('Driver')
                               ],
                             ),
@@ -233,30 +231,13 @@ class _ScreenHomeState extends State<ScreenHome> {
             },
           ),
         ),
-        // Align(
-        //   alignment: Alignment.bottomRight,
-        //   child: FloatingActionButton(
-        //     onPressed: () {
-        //       Navigator.pushReplacement(
-        //         context,
-        //         MaterialPageRoute(
-        //           builder: (context) => const Screen3(),
-        //         ),
-        //       );
-        //     },
-        //     child: Text('Add'),
-        //     backgroundColor: Colors.black54,
-        //     foregroundColor: Colors.white,
-        //     shape: const BeveledRectangleBorder(),
-        //   ),
-        // ),
         Align(
           alignment: Alignment.bottomRight,
           child: Padding(
             padding: const EdgeInsets.all(5),
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const Screen3(),
